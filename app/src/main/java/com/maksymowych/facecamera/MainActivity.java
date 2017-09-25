@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.view.View;
@@ -22,14 +21,11 @@ public class MainActivity extends Activity {
     private boolean hasCameraPermission;
     private Camera frontCamera;
 
-    private CameraPreview cameraPreview;
-
     private Handler handler;
 
     private long lastPictureTimestamp;
     private int numPicturesTaken;
 
-    private Random random;
     public long randomSalt;
 
     @Override
@@ -53,7 +49,7 @@ public class MainActivity extends Activity {
 
         handler = new Handler();
 
-        random = new Random();
+        final Random random = new Random();
         randomSalt = random.nextLong();
     }
 
@@ -68,7 +64,7 @@ public class MainActivity extends Activity {
                 return;
             }
 
-            cameraPreview = new CameraPreview(this, frontCamera);
+            final CameraPreview cameraPreview = new CameraPreview(this, frontCamera);
             frontCamera.setDisplayOrientation(90);
 
             final ConstraintLayout cameraPreviewLayout = (ConstraintLayout) findViewById(R.id.preview);
@@ -92,14 +88,8 @@ public class MainActivity extends Activity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case CAMERA_PERMISSION_REQUEST: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay!
-                    hasCameraPermission = true;
-                } else {
-                    // permission denied, boo!
-                    hasCameraPermission = false;
-                }
+                // If request is cancelled, the result arrays are empty
+                hasCameraPermission = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 break;
             }
         }

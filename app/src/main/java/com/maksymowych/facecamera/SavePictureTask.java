@@ -1,6 +1,5 @@
 package com.maksymowych.facecamera;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -33,7 +32,7 @@ class SavePictureTask extends AsyncTask<Byte[], Void, Void> {
 
             final File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
             if (pictureFile == null) {
-                Log.d(LOG_TAG, "Error creating media file, check storage permissions");
+                Log.d(LOG_TAG, "Error creating media file, check storage permissions?");
                 return null;
             }
 
@@ -42,9 +41,9 @@ class SavePictureTask extends AsyncTask<Byte[], Void, Void> {
                 fos.write(bytes);
                 fos.close();
             } catch (FileNotFoundException e) {
-                Log.d(LOG_TAG, "File not found: " + e.getMessage());
+                Log.d(LOG_TAG, "File not found saving photo " + e.getMessage());
             } catch (IOException e) {
-                Log.d(LOG_TAG, "Error accessing file: " + e.getMessage());
+                Log.d(LOG_TAG, "Error accessing file saving photo " + e.getMessage());
             }
         }
 
@@ -70,7 +69,7 @@ class SavePictureTask extends AsyncTask<Byte[], Void, Void> {
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.d(LOG_TAG, "failed to create directory");
+                Log.d(LOG_TAG, String.format("failed to create directory %s", mediaStorageDir.toString()));
                 return null;
             }
         }
