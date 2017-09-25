@@ -2,6 +2,8 @@ package com.maksymowych.facecamera;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Base64;
+import android.util.Base64OutputStream;
 import android.util.Log;
 
 import java.io.File;
@@ -11,6 +13,12 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 class SavePictureTask extends AsyncTask<Byte[], Void, Void> {
 
@@ -38,7 +46,12 @@ class SavePictureTask extends AsyncTask<Byte[], Void, Void> {
 
             try {
                 FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(bytes);
+                Base64OutputStream b64os = new Base64OutputStream(fos, Base64.NO_PADDING); // Are these the right flags?
+                CipherOutputStream cos = new CipherOutputStream(b64os, context.getCipher());
+
+                cos.write(bytes);
+                cos.close();
+                b64os.close();
                 fos.close();
             } catch (FileNotFoundException e) {
                 Log.d(LOG_TAG, "File not found saving photo " + e.getMessage());

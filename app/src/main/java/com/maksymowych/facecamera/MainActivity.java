@@ -12,6 +12,11 @@ import android.view.View;
 
 import java.util.Random;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 public class MainActivity extends Activity {
 
     private static final String LOG_TAG = "FaceCamera";
@@ -25,6 +30,11 @@ public class MainActivity extends Activity {
 
     private long lastPictureTimestamp;
     private int numPicturesTaken;
+
+    // Example, not a good way to set the key
+    private byte[] key;
+    private byte[] iv;
+    private Cipher cipher;
 
     public long randomSalt;
 
@@ -49,8 +59,27 @@ public class MainActivity extends Activity {
 
         handler = new Handler();
 
+        // For salting file names
         final Random random = new Random();
         randomSalt = random.nextLong();
+
+        // For encrypting files
+        // https://stackoverflow.com/questions/6608529/how-to-use-cipheroutputstream-correctly-to-encrypt-and-decrypt-log-created-with?rq=1
+        // Example, not a good way to set the key
+        key = new byte[256 / 8]; // 256 bits
+        random.nextBytes(key);
+
+        iv = new byte[16];
+        random.nextBytes(iv);
+
+        try {
+            final SecretKey secretKey = new SecretKeySpec(key, "AES");
+            final IvParameterSpec initializationVector = new IvParameterSpec(iv);
+            cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, initializationVector);
+        } catch  (Exception e) {
+            Log.d(LOG_TAG, "Error initializing cipher: " + e.getMessage());
+        }
     }
 
     @Override
@@ -178,6 +207,10 @@ public class MainActivity extends Activity {
             new SavePictureTask(MainActivity.this).execute(bytes);
         }
     };
+
+    public Cipher getCipher() {
+        return cipher;
+    }
 
     public long getRandomSalt() {
         return randomSalt;
