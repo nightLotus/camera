@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FaceCamera</string>
+    <string name="button_label">Recognize</string>
 </resources>
