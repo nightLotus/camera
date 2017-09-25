@@ -7,6 +7,7 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -63,7 +64,7 @@ public class MainActivity extends Activity {
             cameraPreview = new CameraPreview(this, frontCamera);
             frontCamera.setDisplayOrientation(90);
 
-            final FrameLayout cameraPreviewLayout = (FrameLayout) findViewById(R.id.preview);
+            final ConstraintLayout cameraPreviewLayout = (ConstraintLayout) findViewById(R.id.preview);
             cameraPreviewLayout.addView(cameraPreview);
         } else {
             frontCamera = null;
