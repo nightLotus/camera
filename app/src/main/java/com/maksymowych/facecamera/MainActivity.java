@@ -6,9 +6,12 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.view.View;
+
+import java.util.Random;
 
 public class MainActivity extends Activity {
 
@@ -22,7 +25,12 @@ public class MainActivity extends Activity {
     private CameraPreview cameraPreview;
 
     private Handler handler;
+
+    private long lastPictureTimestamp;
     private int numPicturesTaken;
+
+    private Random random;
+    public long randomSalt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +52,9 @@ public class MainActivity extends Activity {
         }
 
         handler = new Handler();
+
+        random = new Random();
+        randomSalt = random.nextLong();
     }
 
     @Override
@@ -72,6 +83,7 @@ public class MainActivity extends Activity {
         super.onPause();
 
         if (frontCamera != null) {
+            frontCamera.stopPreview();
             frontCamera.release();
         }
     }
@@ -153,11 +165,8 @@ public class MainActivity extends Activity {
     private final Runnable takePictureRunnable = new Runnable() {
         @Override
         public void run() {
+            lastPictureTimestamp = System.currentTimeMillis();
             frontCamera.takePicture(null, null, pictureCallback);
-            if (++numPicturesTaken < 10) {
-                handler.postDelayed(takePictureRunnable, 500);
-            }
-
             Log.d(LOG_TAG, String.format("Took picture %d", numPicturesTaken));
         }
     };
@@ -167,13 +176,20 @@ public class MainActivity extends Activity {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             frontCamera.startPreview();
+            if (++numPicturesTaken < 10) {
+                final long delay = 500 - (System.currentTimeMillis() - lastPictureTimestamp);
+                handler.postDelayed(takePictureRunnable, Math.max(0, Math.max(0, delay)));
+            }
 
             final Byte[] bytes = new Byte[data.length];
-            //System.arraycopy(data, 0, bytes, 0, bytes.length);
             for (int i = 0; i < bytes.length; i++) {
                 bytes[i] = data[i];
             }
-            new SavePictureTask(getBaseContext()).execute(bytes);
+            new SavePictureTask(MainActivity.this).execute(bytes);
         }
     };
+
+    public long getRandomSalt() {
+        return randomSalt;
+    }
 }
