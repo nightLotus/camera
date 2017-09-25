@@ -15,6 +15,6 @@ Modern phones should have no issue taking photos at a 500ms delay, however, it's
 
 I'm using the Android Camera APIs (as opposed to Camera**2**), which Google's documentation assures me is deprecated but is still used for the official developer guide. Given more time I would study the appropriate camera API to use as well.
 
-Photos are stored in the application's local storage (/data/data/<app-package>), which is not readable or writable by other apps (including the shell user). We don't consider root access to the device as that makes security nearly impossible with things like Xposed or other app hacking.
+Photos are stored in the application's local storage (/data/data/<app-package>), which is not readable or writable by other apps (including the shell user). We don't consider root access to the device as that makes security nearly impossible with things like Xposed or other app hacking, although good encryption may help here.
 
 If encrypting the photos, we need to use other authentication methods, such as PIN, password, or fingerprint, and not a randomly generated key, as I did here. Or, if we use a randomly generated key, it needs to be done consistently or in a manner that makes it secure and recoverable.
