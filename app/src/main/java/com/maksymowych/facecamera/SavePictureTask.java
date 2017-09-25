@@ -14,11 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 class SavePictureTask extends AsyncTask<Byte[], Void, Void> {
 
@@ -40,7 +36,7 @@ class SavePictureTask extends AsyncTask<Byte[], Void, Void> {
 
             final File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
             if (pictureFile == null) {
-                Log.d(LOG_TAG, "Error creating media file, check storage permissions?");
+                Log.e(LOG_TAG, "Error creating media file, check storage permissions?");
                 return null;
             }
 
@@ -54,9 +50,9 @@ class SavePictureTask extends AsyncTask<Byte[], Void, Void> {
                 b64os.close();
                 fos.close();
             } catch (FileNotFoundException e) {
-                Log.d(LOG_TAG, "File not found saving photo " + e.getMessage());
+                Log.e(LOG_TAG, "File not found saving photo " + e.getMessage());
             } catch (IOException e) {
-                Log.d(LOG_TAG, "Error accessing file saving photo " + e.getMessage());
+                Log.e(LOG_TAG, "Error accessing file saving photo " + e.getMessage());
             }
         }
 
@@ -82,7 +78,7 @@ class SavePictureTask extends AsyncTask<Byte[], Void, Void> {
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.d(LOG_TAG, String.format("failed to create directory %s", mediaStorageDir.toString()));
+                Log.e(LOG_TAG, String.format("failed to create directory %s", mediaStorageDir.toString()));
                 return null;
             }
         }

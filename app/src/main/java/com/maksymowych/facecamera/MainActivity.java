@@ -22,6 +22,7 @@ public class MainActivity extends Activity {
     private static final String LOG_TAG = "FaceCamera";
 
     private static final int CAMERA_PERMISSION_REQUEST = 1000;
+    private static final int CAMERA_PHOTO_DELAY_MS = 500;
 
     private boolean hasCameraPermission;
     private Camera frontCamera;
@@ -78,7 +79,7 @@ public class MainActivity extends Activity {
             cipher = Cipher.getInstance("AES/CBC/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, initializationVector);
         } catch  (Exception e) {
-            Log.d(LOG_TAG, "Error initializing cipher: " + e.getMessage());
+            Log.e(LOG_TAG, "Error initializing cipher: " + e.getMessage());
         }
     }
 
@@ -86,6 +87,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
+        // Acquire the camera
         if (hasCameraPermission && checkCameraHardware()) {
             frontCamera = getCameraInstance();
 
@@ -93,6 +95,7 @@ public class MainActivity extends Activity {
                 return;
             }
 
+            // Start the preview
             final CameraPreview cameraPreview = new CameraPreview(this, frontCamera);
             frontCamera.setDisplayOrientation(90);
 
@@ -107,6 +110,7 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
 
+        // Release the camera
         if (frontCamera != null) {
             frontCamera.stopPreview();
             frontCamera.release();
@@ -173,7 +177,6 @@ public class MainActivity extends Activity {
     }
 
     public void recognizeButtonClicked(View view) {
-        Log.d(LOG_TAG, "recognizeButtonClicked");
         numPicturesTaken = 0;
 
         if (frontCamera != null) {
@@ -186,7 +189,7 @@ public class MainActivity extends Activity {
         public void run() {
             lastPictureTimestamp = System.currentTimeMillis();
             frontCamera.takePicture(null, null, pictureCallback);
-            Log.d(LOG_TAG, String.format("Took picture %d", numPicturesTaken));
+            Log.v(LOG_TAG, String.format("Took picture %d", numPicturesTaken));
         }
     };
 
@@ -194,16 +197,19 @@ public class MainActivity extends Activity {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            frontCamera.startPreview();
-            if (++numPicturesTaken < 10) {
-                final long delay = 500 - (System.currentTimeMillis() - lastPictureTimestamp);
-                handler.postDelayed(takePictureRunnable, Math.max(0, Math.max(0, delay)));
+            if (frontCamera != null) {
+                frontCamera.startPreview();
+                if (++numPicturesTaken < 10) {
+                    final long delay = CAMERA_PHOTO_DELAY_MS - (System.currentTimeMillis() - lastPictureTimestamp);
+                    handler.postDelayed(takePictureRunnable, Math.max(0, Math.max(0, delay)));
+                }
             }
 
             final Byte[] bytes = new Byte[data.length];
             for (int i = 0; i < bytes.length; i++) {
                 bytes[i] = data[i];
             }
+
             new SavePictureTask(MainActivity.this).execute(bytes);
         }
     };

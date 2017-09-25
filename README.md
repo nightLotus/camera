@@ -18,3 +18,7 @@ I'm using the Android Camera APIs (as opposed to Camera**2**), which Google's do
 Photos are stored in the application's local storage (/data/data/<app-package>), which is not readable or writable by other apps (including the shell user). We don't consider root access to the device as that makes security nearly impossible with things like Xposed or other app hacking, although good encryption may help here.
 
 If encrypting the photos, we need to use other authentication methods, such as PIN, password, or fingerprint, and not a randomly generated key, as I did here. Or, if we use a randomly generated key, it needs to be done consistently or in a manner that makes it secure and recoverable.
+
+The code is messy, including snippets from the Android guide. I would obviously clean these up and make sure they are adapted to my specific needs better.
+
+The git history is messy. Again, this isn't how I would ideally work, but as this is a timed challenge, I made concessions. I would prefer to break up my commits by feature and focus and add better messages rather than furiously add and commit.
