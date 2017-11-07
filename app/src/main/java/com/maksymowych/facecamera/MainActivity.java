@@ -76,7 +76,7 @@ public class MainActivity extends Activity {
         try {
             final SecretKey secretKey = new SecretKeySpec(key, "AES");
             final IvParameterSpec initializationVector = new IvParameterSpec(iv);
-            cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, initializationVector);
         } catch  (Exception e) {
             Log.e(LOG_TAG, "Error initializing cipher: " + e.getMessage());
